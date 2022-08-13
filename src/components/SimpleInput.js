@@ -1,56 +1,42 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 const SimpleInput = (props) => {
-	const inputRef = useRef();
 	const [ enteredValue, setEnteredValue ] = useState('');
-	const [ inputTouch, setInputTouch ] = useState(false);
-	const [ formIsValid, setFormIsValid ] = useState(false);
+	const [ inputTouched, setInputTouched ] = useState(false);
 
-	const changeHandler = (event) => {
-		setEnteredValue(event.target.value);
-	}
+	const inputIsValid = (enteredValue.trim().length > 2);
+	const isValid = inputTouched? inputIsValid : true;
+	const inputClass = isValid? 'form-control' : 'form-control invalid';
 
-	const blurHandler = (event) => {
-		setInputTouch(true);
-		if(enteredValue.trim().length < 1) {
-			setFormIsValid(false);
-			return;
-		}
-		setFormIsValid(true);
-	}
+	const changeHandler = (event) => setEnteredValue(event.target.value);
+
+	const blurHandler = () => setInputTouched(true);
 
 	const submitHandler = (event) => {
 		event.preventDefault();
-		setInputTouch(true);
+		setInputTouched(true);
 		
-		if(enteredValue.trim().length < 2) {
-			setFormIsValid(false);
-			return;
-		}
-		setFormIsValid(true);
+		if(!inputIsValid)
+			return
 
 		console.log(enteredValue);
-		console.log(inputRef.current.value);
-	}
-
-	const inputIsValid = inputTouch? formIsValid : true;
-
-	const inputClass = inputIsValid? 'form-control' : 'form-control invalid';
+		setEnteredValue('');
+		setInputTouched(false);
+	};
 
 	return (
 		<form onSubmit={submitHandler}>
 			<div className={inputClass}>
 				<label htmlFor='name'>Your Name</label>
 				<input
-					ref={inputRef}
 					type='text'
 					id='name'
 					value={enteredValue}
-					onChange={changeHandler}
 					onBlur={blurHandler}
+					onChange={changeHandler}
 				/>
 			</div>
-			{!inputIsValid && <p className="error-text"> input length should be more than 1 </p>}
+			{!isValid && <p className="error-text"> field should contain atleast 3 letters </p>}
 			<div className="form-actions">
 				<button type="submit">Submit</button>
 			</div>
