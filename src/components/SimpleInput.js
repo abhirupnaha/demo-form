@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const SimpleInput = (props) => {
 	const [ enteredValue, setEnteredValue ] = useState('');
 	const [ inputTouched, setInputTouched ] = useState(false);
+	// to enable/disable submit button
+	const [ formIsValid, setFormIsValid ] = useState(false);
 
 	const inputIsValid = (enteredValue.trim().length > 2);
 	const isValid = inputTouched? inputIsValid : true;
 	const inputClass = isValid? 'form-control' : 'form-control invalid';
+
+	useEffect(() => {
+		if(inputIsValid)
+			setFormIsValid(true);
+		else
+			setFormIsValid(false);
+	}, [inputIsValid])
 
 	const changeHandler = (event) => setEnteredValue(event.target.value);
 
@@ -38,7 +47,7 @@ const SimpleInput = (props) => {
 			</div>
 			{!isValid && <p className="error-text"> field should contain atleast 3 letters </p>}
 			<div className="form-actions">
-				<button type="submit">Submit</button>
+				<button type="submit" disabled={!formIsValid}>Submit</button>
 			</div>
 		</form>
 	);
